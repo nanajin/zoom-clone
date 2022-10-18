@@ -47,7 +47,7 @@ io.on("connection", (socket)=>{
   { 
     socket.join(roomName); 
     // console.log(socket.rooms); //어느 방에 있나요 = socket.id
-    done();
+    // done();
     socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     io.sockets.emit("room_change", publicRooms());
   });
@@ -57,13 +57,22 @@ io.on("connection", (socket)=>{
   });
   socket.on("disconnect", () => {
     io.sockets.emit("room_change", publicRooms());
-  })
+  });
   socket.on("new_message", (msg, room, done)=>{
     socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
     done();
-  })
+  });
   socket.on("nickname", (nickname) => {
     socket["nickname"] = nickname
+  });
+  socket.on("offer", (offer, roomName) => {
+    socket.to(roomName).emit("offer", offer);
+  });
+  socket.on("answer", (answer, roomName)=>{
+    socket.to(roomName).emit("answer", answer);
+  });
+  socket.on("ice", (ice, roomName)=>{
+    socket.to(roomName).emit("ice", ice);
   })
 });
 
